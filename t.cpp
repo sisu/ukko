@@ -1,7 +1,4 @@
-#include "traits.hpp"
-#include <typeinfo>
-#include <iostream>
-#include <exception>
+#include "ukko.hpp"
 using namespace std;
 
 int func(int x, int y) {
@@ -9,9 +6,5 @@ int func(int x, int y) {
 }
 
 int main() {
-	typedef traits<decltype(func)>::ret T;
-	cout<<typeid(T).name()<<'\n';
-	cout<<typeid(decltype(func)).name()<<'\n';
-	bad_exception e;
-	cout<<e.what()<<'\n';
+	ukko::call(func, 1, 2);
 }

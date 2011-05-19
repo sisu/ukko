@@ -9,10 +9,10 @@ using namespace std;
 
 namespace ukko {
 
-struct UkkoListener {
-	UkkoListener() {
-		char* host = getenv("UKKO_REMOTE_HOST");
-		char* port = getenv("UKKO_REMOTE_PORT");
+struct UkkoSlave {
+	UkkoSlave() {
+		char* host = getenv("UKKO_MASTER_HOST");
+		char* port = getenv("UKKO_MASTER_PORT");
 		if (!host || !port) return;
 		bool ok = parConn.open(host, atoi(port));
 		if (!ok) {
@@ -34,6 +34,6 @@ struct UkkoListener {
 		serialize(dser, c);
 	}
 	net::Connection parConn;
-} ukkoListener;
+} ukkoSlave;
 
 }
