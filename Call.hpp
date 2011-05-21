@@ -15,8 +15,8 @@ void buildObject(void* out, Serializer& s) {
 }
 
 struct Call {
-	void* func;
-	std::vector<void*> params;
+	ptrdiff_t func;
+	std::vector<ptrdiff_t> params;
 
 	template<class S>
 	void serialize(S& s) {
@@ -41,7 +41,7 @@ struct Call {
 		// Taking pointers to variables hopefully forces instantiation...
 		typedef typename std::tuple_element<N,T>::type Y;
 		void(*ptr)(void*,Serializer&) = buildObject<Y>;
-		params.push_back((void*)ptr);
+		params.push_back((ptrdiff_t)ptr);
 		initParams<N+1,T>(std::forward<A>(args)...);
 	}
 
