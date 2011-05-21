@@ -7,8 +7,6 @@
 
 namespace ukko {
 
-inline void baseFunc() {}
-
 template<class T>
 void buildObject(void* out, Serializer& s) {
 	typedef typename std::remove_reference<T>::type U;
@@ -17,8 +15,8 @@ void buildObject(void* out, Serializer& s) {
 }
 
 struct Call {
-	ptrdiff_t func;
-	std::vector<ptrdiff_t> params;
+	void* func;
+	std::vector<void*> params;
 
 	template<class S>
 	void serialize(S& s) {
@@ -42,9 +40,8 @@ struct Call {
 		// FIXME: serialize somewhere...
 		// Taking pointers to variables hopefully forces instantiation...
 		typedef typename std::tuple_element<N,T>::type Y;
-		auto ptr = buildObject<Y>;
-		auto bptr = baseFunc;
-		params.push_back((char*)ptr - (char*)bptr);
+		void(*ptr)(void*,Serializer&) = buildObject<Y>;
+		params.push_back((void*)ptr);
 		initParams<N+1,T>(std::forward<A>(args)...);
 	}
 
