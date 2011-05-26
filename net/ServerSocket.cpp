@@ -15,8 +15,14 @@
 
 namespace net {
 
-void ServerSocket::init(int port, bool block) {
-	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ServerSocket::ServerSocket(): sockfd(0) {
+}
+ServerSocket::~ServerSocket() {
+	if (sockfd) close(sockfd);
+}
+
+bool ServerSocket::init(int port, bool block) {
+	int fd = socket(AF_INET, SOCK_STREAM, 0);
 
 	struct sockaddr_in serv_addr;
 //  bzero((char *) &serv_addr, sizeof(serv_addr));
@@ -29,34 +35,38 @@ void ServerSocket::init(int port, bool block) {
 #else
 	char yes=1;
 #endif
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) {
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) < 0) {
 		perror("setsockopt fail");
-		exit(3);
+		return 0;
 	}
-	if (bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
+	if (bind(fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0) {
 		perror("ERROR on binding");
-		exit(1);
+		return 0;
 	}
-	if (listen(sockfd,5)) {
+	if (listen(fd,5)) {
 		perror("Error on calling listen");
-		exit(5);
+		return 0;
 	}
 
 	if (!block) {
 #ifndef WIN32
-		fcntl(sockfd, F_SETFL, O_NONBLOCK);
+		fcntl(fd, F_SETFL, O_NONBLOCK);
 #else
 		unsigned long x=1;
-		ioctlsocket(sockfd, FIONBIO, &x);
+		ioctlsocket(fd, FIONBIO, &x);
 		char flag=1;
-		if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag))<0) {
+		if (setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof(flag))<0) {
 			perror("setsockopt TCP_NODELAY");
-			exit(17);
+			return 0;
 		}
 #endif
 	}
 
-	std::cout<<"listening port "<<port<<'\n';
+	sockfd = fd;
+
+//	std::cout<<"listening port "<<port<<'\n';
+
+	return 1;
 }
 
 void ServerSocket::pollConnections() {

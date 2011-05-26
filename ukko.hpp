@@ -9,4 +9,6 @@ void call(F&& f, A&&... args) {
 	deployCall(Call(f,args...));
 }
 
+void init();
+
 }

@@ -7,7 +7,9 @@
 namespace net {
 
 struct ServerSocket {
-	void init(int port, bool block);
+	ServerSocket();
+	~ServerSocket();
+	bool init(int port, bool block);
 	void pollConnections();
 	void readSockets();
 	void send(const void* data, int n);
