@@ -4,7 +4,7 @@ project(ukko)
 
 set(CMAKE_CXX_FLAGS "-Wall -O2 -std=c++0x")
 
-set(src slave.cpp master.cpp)
+set(src slave.cpp master.cpp ukko.cpp)
 
 add_subdirectory(net)
 
