@@ -6,5 +6,6 @@ int func(int x, int y) {
 }
 
 int main() {
+	ukko::init();
 	ukko::call(func, 1, 2);
 }

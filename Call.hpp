@@ -16,18 +16,19 @@ void buildObject(void* out, Serializer& s) {
 
 struct Call {
 	ptrdiff_t func;
-	std::vector<ptrdiff_t> params;
+	std::vector<ptrdiff_t> paramFuncs;
+	Serializer paramData;
 
 	template<class S>
 	void serialize(S& s) {
-		s & func & params;
+		s & func & paramFuncs & paramData;
 	}
 
 	Call(){}
 
 	template<class F, class...A>
 	explicit Call(F&& f, A&&... args) {
-		params.reserve(sizeof...(A));
+		paramFuncs.resize(sizeof...(A));
 		typedef typename Traits<F>::args P;
 		initParams<0,P>(std::forward<A>(args)...);
 	}
@@ -37,11 +38,12 @@ struct Call {
 
 	template<size_t N, class T, class X, class...A>
 	void initParams(X&& x, A&&... args) {
-		// FIXME: serialize somewhere...
 		// Taking pointers to variables hopefully forces instantiation...
 		typedef typename std::tuple_element<N,T>::type Y;
 		void(*ptr)(void*,Serializer&) = buildObject<Y>;
-		params.push_back((ptrdiff_t)ptr);
+		paramFuncs[N] = (ptrdiff_t)ptr;
+		Y y(x);
+		paramData & y;
 		initParams<N+1,T>(std::forward<A>(args)...);
 	}
 

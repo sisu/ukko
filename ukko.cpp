@@ -3,6 +3,8 @@
 
 namespace ukko {
 
+void initMaster();
+
 void runSlave(const char* host, int port);
 
 bool initSlave() {
@@ -12,14 +14,12 @@ bool initSlave() {
 	runSlave(host, atoi(port));
 	return 1;
 }
-void initMaster() {
-}
 
 void init() {
+	initMaster();
 	if (initSlave()) {
 		exit(0);
 	}
-	initMaster();
 }
 
 }
